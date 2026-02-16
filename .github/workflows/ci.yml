@@ -57,3 +57,40 @@ jobs:
         id: set-output
         run: |
              echo "build_name=${{ env.APP_NAME }}-${{ matrix.python-version }}" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'
+    
+    environment:
+      name: production
+
+    steps:
+      - name: Deployment Version Display
+        run: |
+             echo "Show Stable version which will be deployed:"
+             echo "${{ needs.build.outputs.build-name }}"
+
+      - name: Configure Deploy Token
+        run: |
+             echo "Deploying with Secret token...."   
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}  
+
+      - name: Download Stable Artifact 
+        uses: actions/download-artifact@v4
+        with:
+            name: build-3.11
+
+      - name: Display deployable artifact
+        run: cat build.txt
+
+      - name: Simulated Deployment
+        run: echo "Deploying ${{ env.APP_NAME }} to production"        
+
+
+       
+              
+  
