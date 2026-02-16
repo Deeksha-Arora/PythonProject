@@ -16,10 +16,18 @@ jobs:
       matrix:
         python-version: [ "3.9", "3.10", "3.11", "3.12" ]
     outputs:
-      build-name: ${{ steps.set-output.outputs.build_name }}    
+      build-name: ${{ steps.meta.outputs.build_name }}
+      build-date: ${{ steps.meta.outputs.build_date }}
+          
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4 
+
+      - name: Generate Metadata Job Output
+        id: meta
+        run: |
+             echo "build_name=python-demo-app" >> $GITHUB_OUTPUT
+             echo "build_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       
       - name: Setup Python environment ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -53,14 +61,12 @@ jobs:
             name: build-${{ matrix.python-version }} 
             path: dist/
 
-      - name: Set Job Output
-        id: set-output
-        run: |
-             echo "build_name=${{ env.APP_NAME }}-${{ matrix.python-version }}" >> $GITHUB_OUTPUT
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
+    env:
+      STABLE-VERSION: "3.11"
 
     if: github.ref == 'refs/heads/main'
     
@@ -68,10 +74,16 @@ jobs:
       name: production
 
     steps:
+      - name: Display Deployment Info
+        run: |
+             echo "Displaying Deployment metadata"
+             echo "App Name: ${{ needs.build.outputs.build-name }}"
+             echo "Build Date: ${{ needs.build.outputs.build-date }}"
+             
       - name: Deployment Version Display
         run: |
              echo "Show Stable version which will be deployed:"
-             echo "${{ needs.build.outputs.build-name }}"
+             echo "Stable Version: ${{ env.STABLE-VERSION }}"
 
       - name: Configure Deploy Token
         run: |
