@@ -20,7 +20,7 @@ jobs:
           - python-version: "3.12"
             experimental: true
 
-    continue-on-error: ${{ matrix.experimental }}        
+    continue-on-error: ${{ matrix.experimental == true }}        
 
     outputs:
       build-name: ${{ steps.meta.outputs.build_name }}
