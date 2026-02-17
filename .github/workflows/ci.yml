@@ -33,7 +33,7 @@ jobs:
       - name: Generate Metadata Job Output
         id: meta
         run: |
-             echo "build_name=python-demo-app" >> $GITHUB_OUTPUT
+             echo "build_name=${{ env.APP_NAME }}" >> $GITHUB_OUTPUT
              echo "build_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       
       - name: Setup Python environment ${{ matrix.python-version }}
@@ -85,7 +85,7 @@ jobs:
       build-name: ${{ needs.build.outputs.build-name }}
       build-date: ${{ needs.build.outputs.build-date }}
       stable-version: "3.11"
-      app-name: ${{ env.APP_NAME }}
+      app-name: "python-demo-app"
 
     secrets:
       DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}         
