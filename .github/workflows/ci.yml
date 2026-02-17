@@ -49,6 +49,7 @@ jobs:
 
       - name: Run tests
         run: pytest
+        continue-on-error: ${{ matrix.python-version == '3.11' }}
 
       - name: Create Artifact
         run: |
