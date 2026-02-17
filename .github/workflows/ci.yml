@@ -76,44 +76,19 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
-
-    env:
-      STABLE-VERSION: "3.11"
 
     if: github.ref == 'refs/heads/main' && needs.build.result == 'success'
 
-    environment:
-      name: production
+    uses: ./.github/workflows/reusable-deploy.yml
 
-    steps:
-      - name: Display Deployment Info
-        run: |
-             echo "Displaying Deployment metadata"
-             echo "App Name: ${{ needs.build.outputs.build-name }}"
-             echo "Build Date: ${{ needs.build.outputs.build-date }}"
-             
-      - name: Deployment Version Display
-        run: |
-             echo "Show Stable version which will be deployed:"
-             echo "Stable Version: ${{ env.STABLE-VERSION }}"
+    with:
+      build-name: ${{ needs.build.outputs.build-name }}
+      build-date: ${{ needs.build.outputs.build-date }}
+      stable-version: "3.11"
+      app-name: ${{ env.APP_NAME }}
 
-      - name: Configure Deploy Token
-        run: |
-             echo "Deploying with Secret token...."   
-        env:
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}  
-
-      - name: Download Stable Artifact 
-        uses: actions/download-artifact@v4
-        with:
-            name: build-3.11
-
-      - name: Display deployable artifact
-        run: cat build.txt
-
-      - name: Simulated Deployment
-        run: echo "Deploying ${{ env.APP_NAME }} to production"        
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}         
 
 
        

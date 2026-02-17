@@ -1,0 +1,56 @@
+name: Reusable Deploy workflow
+on: 
+  workflow_call:
+    inputs:
+       build-name:
+        description: "Name of the build"
+        required: true
+        type: string
+       build-date:
+        description: "Date of the build"
+        required: true
+        type: string 
+       stable-version:
+        required: true
+        type: string
+       app-name:
+        required: true
+        type: string 
+
+    secrets:
+       DEPLOY_TOKEN:
+        required: true  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: production
+
+    steps:
+       - name: Display Deployment Info
+         run: |
+          echo "App Name: ${{ inputs.build-name }}"
+          echo "Build Date: ${{ inputs.build-date }}"
+
+       - name: Show Stable Version
+         run: |
+           echo "Stable Version: ${{ inputs.stable-version }}"   
+
+       - name: Configure Deploy Token
+         run: |
+              echo "Deploying with Secret token...."   
+         env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}      
+
+       - name: Download Stable Artifact
+         uses: actions/download-artifact@v4
+         with:
+          name: build-${{ inputs.stable-version }}    
+
+       - name: Display deployable artifact
+         run: cat build.txt 
+
+       - name: Simulated Deployment
+         run: echo "Deploying ${{ inputs.app-name }} to production"    
