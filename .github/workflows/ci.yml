@@ -69,6 +69,13 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+           name: failure-logs-${{ matrix.python-version }}
+           path: logs/  
+
       - name: Simulate failure for Python 3.12
         if: matrix.python-version == '3.12'
         run: |
@@ -85,6 +92,10 @@ jobs:
         with:
             name: build-${{ matrix.python-version }} 
             path: dist/
+
+      - name: Cleanup
+        if: always()
+        run: echo "Cleaning Workspace"      
 
   deploy:
     needs: build
