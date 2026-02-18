@@ -35,7 +35,19 @@ jobs:
         run: |
              echo "build_name=${{ env.APP_NAME }}" >> $GITHUB_OUTPUT
              echo "build_date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      
+
+      - name: Run Custom Action for Build Info
+        id: buildinfo
+        uses: ./.github/actions/build-info       
+        with:
+           app-name: ${{ env.APP_NAME }}
+           build-date: ${{ steps.meta.outputs.build_date }}
+
+      - name: Validation whether branch is main or not
+        if: steps.buildinfo.outputs.is-main == 'true'
+        run: echo "This is a main branch build"     
+
+
       - name: Setup Python environment ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:

@@ -1,0 +1,35 @@
+name: Build Info action
+description: "Prints build metadata and validates branch"
+
+inputs:
+   app-name:
+     required: true
+
+   build-date:
+     required: true
+
+outputs:
+   is-main:
+     description: "Whether build is from main branch or not"
+     value: ${{ steps.check.outputs.is-main }}
+
+runs:
+   using: "composite"
+   steps:
+      - name: Print build Info
+        run: |
+             echo "Application : ${{ inputs.app-name }}"
+             echo "Build Date : ${{ inputs.build-date }}"
+             echo "Triggered By : ${{ github.actor }}"
+             echo "Branch: ${{ github.ref }}"
+        shell: bash   
+
+      - name: Check if main branch
+        id: check
+        run: |
+             if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+                echo "is-main=true" >> $GITHUB_OUTPUT
+             else
+                echo "is-main=false" >> $GITHUB_OUTPUT  
+             fi  
+        shell: bash             
