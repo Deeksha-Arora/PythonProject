@@ -1,4 +1,4 @@
-name: Build Info action
+name: Build Infoo action
 description: "Prints build metadata and validates branch"
 
 inputs:
